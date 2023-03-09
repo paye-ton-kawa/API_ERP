@@ -1,6 +1,6 @@
 const express = require("express");
 const AppError = require("./utils/appError");
-
+require("dotenv").config();
 const app = express();
 
 // Configurations
@@ -13,6 +13,25 @@ const productRoutes = require("./routes/productRoutes.routes");
 
 app.use("/api/v1/auth", authRoutes);
 // app.use("/api/v1/products", productRoutes);
+
+app.get("/api/v1/auth", (req, res) => {
+	res.status(200).json({
+		status: "success",
+		message: "This is the auth route",
+		routesList: [
+			{
+				route: "/api/v1/auth/signup",
+				method: "POST",
+				description: "Create a new user"
+			},
+			{
+				route: "/api/v1/auth/login",
+				method: "POST",
+				description: "Login a user"
+			}
+		]
+	});
+});
 
 // handle all the routes that are not defined
 app.all("*", (req, res, next) => {
