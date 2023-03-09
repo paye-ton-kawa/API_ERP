@@ -1,0 +1,16 @@
+architecture of the api
+-controllers
+--authController.js
+--productController.js
+-routes
+--authRoutes.routes.js
+--productRoutes.routes.js
+-utils
+--appError.js
+--errorHandler.js
+-app.js
+-package.json
+-package-lock.json
+-.gitignore
+-.env
+-readme.md
