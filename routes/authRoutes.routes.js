@@ -1,8 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { signup } = require("../controllers/authController");
-const { checkEmailDuplicate } = require("../middlewares/authMiddlewares");
+const { signup, deleteUser } = require("../controllers/authController");
+const {
+	checkEmailDuplicate,
+	isAuth
+} = require("../middlewares/authMiddleware");
 
-router.post("/signup", signup);
+router
+	.post("/signup", [checkEmailDuplicate], signup)
+	.delete("/", [isAuth], deleteUser);
 
 module.exports = router;
