@@ -21,17 +21,16 @@ exports.checkEmailDuplicate = (req, res, next) => {
 // Check if the user is authenticated and its token is valid compraing it with the one in the database
 exports.isAuth = (req, res, next) => {
 	try {
-		// Récupérer le jeton d'authentification depuis l'en-tête de la requête
-		let token = req.headers.authorization;
-		// Supprimer le mot clé "Bearer" du jeton
-		token = token.replace("Bearer ", "");
-
-		// Vérifier si le jeton existe
-		if (!token) {
+		// Get the token from the headers if it exists
+		if (!req.headers.authorization)
 			return res
 				.status(401)
 				.json({ message: "A token must be provided in headers" });
-		}
+
+		let token = req.headers.authorization;
+
+		// Supprimer le mot clé "Bearer" du jeton
+		token = token.replace("Bearer ", "");
 
 		const users = JSON.parse(fs.readFileSync("data/users.json"));
 		const user = users.find((user) => user.token === token);
