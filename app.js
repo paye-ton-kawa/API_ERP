@@ -12,7 +12,7 @@ const authRoutes = require("./routes/authRoutes.routes");
 const productRoutes = require("./routes/productRoutes.routes");
 
 app.use("/api/v1/auth", authRoutes);
-// app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/products", productRoutes);
 
 app.get("/api/v1/auth", (req, res) => {
 	res.status(200).json({
