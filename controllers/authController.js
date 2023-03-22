@@ -42,7 +42,7 @@ exports.signup = async (req, res, next) => {
 
 		res
 			.status(201)
-			.json({ status: "success", message: "QR Code updated", token: token });
+			.json({ status: "success", message: "QR Code sent", token: token });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ status: "error", message: error.message });
