@@ -1,0 +1,32 @@
+{
+  "name": "api_revendeur",
+  "version": "1.0.0",
+  "description": "API to access products informations, accessible for authentified sellers",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paye-ton-kawa/API_revendeur.git"
+  },
+  "author": "Calvin Chiffot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paye-ton-kawa/API_revendeur/issues"
+  },
+  "homepage": "https://github.com/paye-ton-kawa/API_revendeur#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "nodemailer": "^6.9.1",
+    "nodemon": "^2.0.21",
+    "qrcode": "^1.5.1"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
+  }
+}
