@@ -3,6 +3,7 @@ const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 const QRCode = require("qrcode");
 const nodemailer = require("nodemailer");
+const pathResolver = require("path");
 
 exports.signup = async (req, res, next) => {
 	const email = req.body.email;
@@ -39,7 +40,7 @@ exports.signup = async (req, res, next) => {
 			fs.readFileSync(pathResolver.join("./main/data/users.json"))
 		);
 		users.push({ email, token });
-		fs.writeFileSync("../data/users.json", JSON.stringify(users));
+		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(users));
 		console.log("User saved");
 
 		res
@@ -95,13 +96,13 @@ exports.updateUser = async (req, res, next) => {
 			fs.readFileSync(pathResolver.join("./main/data/users.json"))
 		);
 		const filteredUsers = users.filter((user) => user.email !== email);
-		fs.writeFileSync("../data/users.json", JSON.stringify(filteredUsers));
+		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(filteredUsers));
 		console.log("User deleted");
 
 		// Save email and the token into the json users file
 		const newUsers = JSON.parse(fs.readFileSync("data/users.json"));
 		newUsers.push({ email, token });
-		fs.writeFileSync("../data/users.json", JSON.stringify(newUsers));
+		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(newUsers));
 		console.log("User new token saved");
 
 		res.status(201).json({
@@ -131,7 +132,7 @@ exports.deleteUser = async (req, res, next) => {
 		console.log(users);
 		const filteredUsers = users.filter((user) => user.token !== token);
 		console.log(filteredUsers);
-		fs.writeFileSync("../data/users.json", JSON.stringify(filteredUsers));
+		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(filteredUsers));
 		console.log("User deleted");
 
 		res.status(200).json({ status: "success" });
