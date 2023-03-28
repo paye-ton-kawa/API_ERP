@@ -58,7 +58,7 @@ describe('isAuth middleware', () => {
   });
 
   test('should call next if token is valid and found in database', () => {
-    const token = jwt.sign({ email: 'test@test.com' }, process.env.ACCESS_TOKEN_SECRET);
+    const token = jwt.sign({ email: 'test@test.com' }, {token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE2ODAwMDUwNDR9.khmAARJjQjlnrBlasQ_wgMsLoFI5bY46BNstt8kdP2Q'});
     const users = [{ email: 'test@test.com', token }];
     req.headers.authorization = `Bearer ${token}`;
     jest.spyOn(fs, 'readFileSync').mockReturnValueOnce(JSON.stringify(users));
