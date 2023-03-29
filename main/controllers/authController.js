@@ -5,6 +5,8 @@ const QRCode = require("qrcode");
 const nodemailer = require("nodemailer");
 const pathResolver = require("path");
 
+const UserModel = require("../models/user");
+
 exports.signup = async (req, res, next) => {
 	const email = req.body.email;
 
@@ -12,7 +14,7 @@ exports.signup = async (req, res, next) => {
 		// Create a jwt token
 		const token = jwt.sign({ email }, process.env.JWT_SECRET);
 
-		//Create the QR code from the token
+		// Create the QR code from the token
 		const qr = await QRCode.toDataURL(token, { type: "image/png" });
 
 		// Send the qr code to the user by email
@@ -29,19 +31,22 @@ exports.signup = async (req, res, next) => {
 			to: email,
 			subject: "QR Code d'authentification 2",
 			html: `<p>Voici le QR Code d'authentification</p>
-				   </br><img src="${qr}">`
+             </br><img src="${qr}">`
 		};
 
 		await transporter.sendMail(options);
 		console.log("Message sent");
 
-		// Save email and the token into the json users file
-		const users = JSON.parse(
-			fs.readFileSync(pathResolver.join("./main/data/users.json"))
-		);
-		users.push({ email, token });
-		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(users));
-		console.log("User saved");
+		// Save email and the token into the MongoDB collection
+		const existingUser = await UserModel.findOne({ email });
+
+		if (!existingUser) {
+			const user = new UserModel({ email, token });
+			await user.save();
+			console.log("User created");
+		} else {
+			console.log("User already exists");
+		}
 
 		res
 			.status(201)
@@ -96,13 +101,19 @@ exports.updateUser = async (req, res, next) => {
 			fs.readFileSync(pathResolver.join("./main/data/users.json"))
 		);
 		const filteredUsers = users.filter((user) => user.email !== email);
-		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(filteredUsers));
+		fs.writeFileSync(
+			pathResolver.join("./main/data/users.json"),
+			JSON.stringify(filteredUsers)
+		);
 		console.log("User deleted");
 
 		// Save email and the token into the json users file
 		const newUsers = JSON.parse(fs.readFileSync("data/users.json"));
 		newUsers.push({ email, token });
-		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(newUsers));
+		fs.writeFileSync(
+			pathResolver.join("./main/data/users.json"),
+			JSON.stringify(newUsers)
+		);
 		console.log("User new token saved");
 
 		res.status(201).json({
@@ -127,14 +138,10 @@ exports.deleteUser = async (req, res, next) => {
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
 		const email = decoded.email;
 
-		// Delete the user from the json file
-		const users = JSON.parse(fs.readFileSync("data/users.json"));
-		console.log(users);
-		const filteredUsers = users.filter((user) => user.token !== token);
-		console.log(filteredUsers);
-		fs.writeFileSync(pathResolver.join("./main/data/users.json"), JSON.stringify(filteredUsers));
-		console.log("User deleted");
+		// Delete the user from the MongoDB collection
+		await UserModel.deleteOne({ email, token });
 
+		console.log("User deleted");
 		res.status(200).json({ status: "success" });
 	} catch (error) {
 		console.log(error);

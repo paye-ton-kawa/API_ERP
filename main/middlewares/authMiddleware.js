@@ -1,46 +1,46 @@
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
-const pathResolver = require("path");
+const UserModel = require("../models/user");
 
 const secretKey = process.env.ACCESS_TOKEN_SECRET;
 
 // Check if the email is already in the database json file
-exports.checkEmailDuplicate = (req, res, next) => {
-	const email = req.body.email;
-	const users = JSON.parse(
-		fs.readFileSync(pathResolver.join("./main/data/users.json"))
-	);
+exports.checkEmailDuplicate = async (req, res, next) => {
+	try {
+		const email = req.body.email;
 
-	// Check if the email is already in the database
-	const user = users.find((user) => user.email === email);
+		const user = await UserModel.findOne({ email });
 
-	if (user) {
-		return res.status(400).json({ message: "Email already exists" });
+		if (user) {
+			return res.status(400).json({ message: "Email already exists" });
+		}
+
+		next();
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ message: error.message });
 	}
-
-	next();
 };
 
-// Check if the user is authenticated and its token is valid compraing it with the one in the database
-exports.isAuth = (req, res, next) => {
+// Check if the user is authenticated and its token is valid comparing it with the one in the database
+exports.isAuth = async (req, res, next) => {
 	try {
 		// Get the token from the headers if it exists
-		if (!req.headers.authorization)
+		if (!req.headers.authorization) {
 			return res
 				.status(401)
 				.json({ message: "A token must be provided in headers" });
+		}
 
 		let token = req.headers.authorization;
 
-		// Supprimer le mot clé "Bearer" du jeton
+		// Remove the "Bearer" keyword from the token
 		token = token.replace("Bearer ", "");
 
-		const users = JSON.parse(
-			fs.readFileSync(pathResolver.join("./main/data/users.json"))
-		);
-		const user = users.find((user) => user.token === token);
+		const user = await UserModel.findOne({ token });
 
-		if (!user) return res.status(401).json({ message: "Unauthorized" });
+		if (!user) {
+			return res.status(401).json({ message: "Unauthorized" });
+		}
 
 		next();
 	} catch (error) {
