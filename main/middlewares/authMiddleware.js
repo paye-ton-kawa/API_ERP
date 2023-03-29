@@ -1,12 +1,15 @@
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const pathResolver = require("path");
 
 const secretKey = process.env.ACCESS_TOKEN_SECRET;
 
 // Check if the email is already in the database json file
 exports.checkEmailDuplicate = (req, res, next) => {
 	const email = req.body.email;
-	const users = JSON.parse(fs.readFileSync("data/users.json"));
+	const users = JSON.parse(
+		fs.readFileSync(pathResolver.join("./main/data/users.json"))
+	);
 
 	// Check if the email is already in the database
 	const user = users.find((user) => user.email === email);
@@ -32,7 +35,9 @@ exports.isAuth = (req, res, next) => {
 		// Supprimer le mot clé "Bearer" du jeton
 		token = token.replace("Bearer ", "");
 
-		const users = JSON.parse(fs.readFileSync("data/users.json"));
+		const users = JSON.parse(
+			fs.readFileSync(pathResolver.join("./main/data/users.json"))
+		);
 		const user = users.find((user) => user.token === token);
 
 		if (!user) return res.status(401).json({ message: "Unauthorized" });

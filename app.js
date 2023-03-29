@@ -1,5 +1,6 @@
 const express = require("express");
 const AppError = require("./main/utils/appError");
+const pathResolver = require("path");
 require("dotenv").config();
 const app = express();
 
